@@ -4,12 +4,16 @@ import (
 	"math"
 )
 
-const TWO_TO_32 = 1 << 32
+//const TWO_TO_32 = 1 << 32
+
+//Hyperloglog struct consists of a register M of size 'm'
 
 type Hll struct {
 	M []uint32
 	m uint32
 }
+
+//Creates a new Hyperloglog struct
 
 func NewHll(m uint32) *Hll {
 	M := make([]uint32, m)
@@ -18,6 +22,8 @@ func NewHll(m uint32) *Hll {
 		m: m,
 	}
 }
+
+//Operation to add an elemnt in the register
 
 func (h *Hll) AddElement(element []byte) {
 
@@ -40,13 +46,15 @@ func (h *Hll) AddElement(element []byte) {
 
 //TODO : Count
 
-func (h1 *Hll) MergeHll(h2 *Hll) {
+//Merge operation for two Hlls
+
+func (h *Hll) MergeHll(k *Hll) {
 
 	//hll[j] := MAX(hll1[j], hll2[j])
 
-	for i, e := range h2.M {
-		if e > h1.M[i] {
-			h1.M[i] = e
+	for i, e := range k.M {
+		if e > h.M[i] {
+			h.M[i] = e
 		}
 	}
 }
