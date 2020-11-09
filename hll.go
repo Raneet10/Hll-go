@@ -24,7 +24,6 @@ func NewHll(m uint32) *Hll {
 }
 
 //Operation to add an elemnt in the register
-
 func (h *Hll) AddElement(element []byte) {
 
 	/*
@@ -47,7 +46,6 @@ func (h *Hll) AddElement(element []byte) {
 //TODO : Count
 
 //Merge operation for two Hlls
-
 func (h *Hll) MergeHll(k *Hll) {
 
 	//hll[j] := MAX(hll1[j], hll2[j])
