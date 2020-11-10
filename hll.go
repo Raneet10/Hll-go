@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-//const TWO_TO_32 = 1 << 32
+const TWO_TO_32 = 1 << 32
 
 //Hyperloglog struct consists of a register M of size 'm'
 
@@ -23,7 +23,7 @@ func NewHll(m uint32) *Hll {
 	}
 }
 
-//Operation to add an elemnt in the register
+//Operation to add an elemnt in the register set
 func (h *Hll) AddElement(element []byte) {
 
 	/*
@@ -43,12 +43,34 @@ func (h *Hll) AddElement(element []byte) {
 	}
 }
 
-//TODO : Count
+// Count gives the cardinality of the register set
+/*
+	Z = Z + 1 / 2 ^ M[j]
+	E = alpha(m) * m^2 * Z
+*/
+
+func (h *Hll) CountElements() uint {
+	estimate := Estimate(h.M)
+
+	if estimate < 2.5*float64(h.m) {
+		if v := ZeroValueRegisters(h.M); v != 0 {
+			return uint(float64(h.m) * math.Log(float64(h.m/v)))
+		}
+		return uint(estimate)
+
+	} else if estimate < TWO_TO_32/30 {
+		return uint(estimate)
+	}
+
+	return uint(-TWO_TO_32 * math.Log(1-estimate/TWO_TO_32))
+}
 
 //Merge operation for two Hlls
-func (h *Hll) MergeHll(k *Hll) {
+/*
+	hll[j] := MAX(hll1[j], hll2[j])
 
-	//hll[j] := MAX(hll1[j], hll2[j])
+*/
+func (h *Hll) MergeHll(k *Hll) {
 
 	for i, e := range k.M {
 		if e > h.M[i] {
